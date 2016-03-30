@@ -52,7 +52,7 @@ class Model(object):
 # init variables
 screen_size = [1366, 768]
 max_turns = 10
-
+DATA_PATH = "../data/test01"
 
 # create a window WTF testMonitor is
 w01 = visual.Window(screen_size, monitor="testMonitor", units="deg", fullscr=True)
@@ -62,15 +62,17 @@ m = Model(max_turns)
 rewards = 0
 while m.remained_turns() > 0:
     # update gui
-    state_imgs = [visual.ImageStim(win=w01, image="../pics/{0}-1.jpg".format(m.state), pos=[-5, 0], size=5),
-                  visual.ImageStim(win=w01, image="../pics/{0}-2.jpg".format(m.state), pos=[5, 0], size=5)]
+    state_imgs = [visual.ImageStim(win=w01, image=DATA_PATH+"/{0}-1.jpg".format(m.state), pos=[-5, 0], size=5),
+                  visual.ImageStim(win=w01, image=DATA_PATH+"/{0}-2.jpg".format(m.state), pos=[5, 0], size=5)]
+    reward_img = visual.TextStim(win=w01, text="cumulative reward: {0}".format(rewards), pos=[-5, 5], color='Black')
     for img in state_imgs:
         img.draw()
+    reward_img.draw()
     w01.update()
 
-    core.wait(1)
+    pressed_keys = event.waitKeys(2, ['right', 'left', 'q'])
+    pressed_keys = [] if pressed_keys is None else pressed_keys
 
-    pressed_keys = event.getKeys()
     # print pressed_keys
     if 'q' in pressed_keys:
         break
