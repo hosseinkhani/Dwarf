@@ -4,8 +4,8 @@ import random
 class ReferenceState(object):
     ID = 0
 
-    def __init__(self, **features):
-        for k, v in features.iteritems():
+    def __init__(self, **kwargs):
+        for k, v in kwargs.iteritems():
             setattr(self, k, v)
 
         self.id = ReferenceState.ID
@@ -24,8 +24,9 @@ class ReferenceState(object):
 class ReferenceAction(object):
     ID = 0
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, **kwargs):
+        for k, v in kwargs.iteritems():
+            setattr(self, k, v)
 
         self.id = ReferenceAction.ID
         ReferenceAction.ID += 1
