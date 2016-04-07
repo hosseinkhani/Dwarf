@@ -67,9 +67,10 @@ class ReferenceModel(object):
         :return: a generator that gets action in each turn and return state, reward
         """
         current_state = initial_state if initial_state is not None else random.sample(self.initial_states, 1)[0]
-        print 'wtf', [s.id for s in self.terminal_states]
+
+        yield current_state  # for first state
+
         while current_state not in self.terminal_states:
-            print 'ghable act'
             action = yield
 
             rand = random.uniform(0, 0.9999)
@@ -145,6 +146,8 @@ if __name__ == '__main__':
                            initial_states=myinitial_states, terminal_states=myterminal_states,
                            rewards=myrewards_matrix, transitions=mytransitions_matrix)
     pl = model.start_new_session()
+    s = pl.next()[0]
+    print s.desc
     pl.next()
     res = pl.send(myactions[0])
     print res[0].desc, res[1]

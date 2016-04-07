@@ -8,9 +8,10 @@ class DawState(ReferenceState):
 
 
 class DawAction(ReferenceAction):
-    def __init__(self, name, **kwargs):
+    def __init__(self, name, key, **kwargs):
         ReferenceAction.__init__(self, **kwargs)
         self.name = name
+        self.key = key
 
     def __repr__(self):
         return self.name
@@ -21,6 +22,12 @@ class DawModel(ReferenceModel):
                  reward_image_path=None):
         ReferenceModel.__init__(self, transitions, rewards, actions, states, initial_states, terminal_states)
         self.reward_path = reward_image_path
+
+    def get_legal_actions(self, state):
+        return {action.key: action for action in self.transitions[state].keys()}
+
+    def get_all_actions(self):
+        return {action.key: action for action in self.actions}
 
 
 if __name__ == '__main__':
