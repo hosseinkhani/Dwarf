@@ -9,10 +9,10 @@ class DawApp(object):
     def start_expriment(self, rounds, **kwargs):
         round_num = 1
         history = []
-        window = visual.Window(kwargs.get('screen_size', [1366, 768]),
+        window = visual.Window(kwargs.get('screen_size', [800, 600]),#[1366, 768]),
                                monitor="testMonitor",
                                units="deg",
-                               fullscr=True)
+                               fullscr=False)
 
         while round_num <= rounds:
             history.append("start round {0}".format(round_num))
@@ -23,6 +23,7 @@ class DawApp(object):
                 history.append('quit')
                 break
             elif status == 0:  # timeout
+                self.show_timeout_message(window)
                 history.extend(hist)
                 history.append('time out')
             elif status == 1:  # ok
@@ -32,7 +33,6 @@ class DawApp(object):
             round_num += 1
 
         window.close()
-        core.quit()
         return history
 
     def start_new_round(self, window):
@@ -45,36 +45,55 @@ class DawApp(object):
 
         while True:
             try:
-                imgs = []
-                for i in xrange(len(state.images)):
-                    imgs.append(visual.ImageStim(win=window, image=state.images[i], pos=[-5+i*10, -2], size=5))
-                    imgs[i].draw()
-                window.update()
+                history.append(state.desc)
 
-                pressed_keys = event.waitKeys(2, actions)
-                pressed_keys = [] if pressed_keys is None else pressed_keys
+                if state not in self.model.terminal_states:
+                    imgs = []
+                    for i in xrange(len(state.images)):
+                        imgs.append(visual.ImageStim(win=window, image=state.images[i], pos=[-5+i*10, -2], size=5))
+                        imgs[i].draw()
+                    window.update()
 
-                event.clearEvents()
+                    pressed_keys = event.waitKeys(2, actions)
+                    pressed_keys = [] if pressed_keys is None else pressed_keys
 
-                a = None
-                if 'q' in pressed_keys:
-                    return -1, history
+                    event.clearEvents()
+
+                    a = None
+                    if 'q' in pressed_keys:
+                        return -1, history
+                    else:
+                        for pressed in pressed_keys:
+                            if actions.get(pressed, None) is not None:
+                                a = actions[pressed]
+                                break
+                        if a is None:
+                            return 0, history
+
+                    session.next()
+                    state, reward = session.send(a)
+
+                    history.append(a.name)
+                    history.append(reward)
+
+                    actions = {'q': -1}
+                    actions.update(self.model.get_legal_actions(state))
+
+                    print state.desc, reward
                 else:
-                    for pressed in pressed_keys:
-                        if actions.get(pressed, None) is not None:
-                            a = actions[pressed]
-                            break
-                    if a is None:
-                        return 0, history
-
-                session.next()
-                state, reward = session.send(a)
-                actions = {'q': -1}
-                actions.update(self.model.get_legal_actions(state))
-
-                print state.desc, reward
+                    session.next()
             except StopIteration:
                 return 1, history
+
+    @staticmethod
+    def show_timeout_message(window):
+        visual.TextStim(win=window, text="U have 1 second to select an action!", pos=[0, 0], color='Black').draw()
+        window.update()
+        core.wait(2)
+
+    @staticmethod
+    def quit():
+        core.quit()
 
 
 if __name__ == '__main__':
@@ -130,4 +149,5 @@ if __name__ == '__main__':
 
     app = DawApp(model=daw_model)
     print app.start_expriment(3)
+    app.quit()
 
