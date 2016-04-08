@@ -1,5 +1,6 @@
 from psychopy import core, event, visual
 from model.daw import DawAction, DawState, DawModel
+import numpy as np
 
 
 class DawApp(object):
@@ -43,6 +44,8 @@ class DawApp(object):
         actions = {'q': -1}
         actions.update(self.model.get_legal_actions(state))
 
+        last_action_image = None
+
         while True:
             try:
                 history.append(state.desc)
@@ -50,8 +53,11 @@ class DawApp(object):
                 if state not in self.model.terminal_states:
                     imgs = []
                     for i in xrange(len(state.images)):
-                        imgs.append(visual.ImageStim(win=window, image=state.images[i], pos=[-5+i*10, -2], size=5))
+                        imgs.append(visual.ImageStim(win=window, image=state.images[i], pos=(-5+i*10, -2), size=5))
                         imgs[i].draw()
+                    if last_action_image is not None:
+                        # last_action_image.pos = (0, 4)
+                        last_action_image.draw()
                     window.update()
 
                     pressed_keys = event.waitKeys(2, actions)
@@ -70,11 +76,19 @@ class DawApp(object):
                         if a is None:
                             return 0, history
 
+                    if last_action_image is None:
+                        last_action_image = imgs[a.index]
+                        imgs.remove(last_action_image)
+                        self.show_actions_transition(window, imgs, last_action_image, (-5+a.index*10, -2), (0, 4))
+
                     session.next()
                     state, reward = session.send(a)
 
                     history.append(a.name)
                     history.append(reward)
+
+                    if reward > 0:
+                        self.show_reward_transition(window, imgs+[last_action_image], self.model.reward_path)
 
                     actions = {'q': -1}
                     actions.update(self.model.get_legal_actions(state))
@@ -92,12 +106,35 @@ class DawApp(object):
         core.wait(2)
 
     @staticmethod
+    def show_actions_transition(window, stims, target_stim, start_point, end_point, cycles=40):
+        counter = 0
+        delta = tuple(np.subtract(end_point, start_point) / float(cycles))
+
+        while counter < cycles:
+            for stim in stims:
+                stim.draw()
+            target_stim.pos += delta
+            target_stim.draw()
+            window.update()
+
+            counter += 1
+
+    @staticmethod
+    def show_reward_transition(window, stims, reward_image):
+        for stim in stims:
+            stim.draw()
+        visual.ImageStim(win=window, image=reward_image, pos=(0, -5), size=3).draw()
+        window.update()
+        core.wait(1)
+
+
+    @staticmethod
     def quit():
         core.quit()
 
 
 if __name__ == '__main__':
-    myactions = [DawAction(name='left', key='left'), DawAction(name='right', key='right')]
+    myactions = [DawAction(name='left', key='left', index=0), DawAction(name='right', key='right', index=1)]
     mystates = [DawState('../data/test01/0-1.jpg', '../data/test01/0-2.jpg', desc='im first one'),
                 DawState('../data/test01/1-1.jpg', '../data/test01/1-2.jpg', desc='im left one'),
                 DawState('../data/test01/2-1.jpg', '../data/test01/2-2.jpg', desc='im right one'),
@@ -143,9 +180,9 @@ if __name__ == '__main__':
     myrewards_matrix[mystates[4]] = {}  # nonreward state(terminal)
 
     daw_model = DawModel(states=mystates, actions=myactions,
-                     initial_states=myinitial_states, terminal_states=myterminal_states,
-                     rewards=myrewards_matrix, transitions=mytransitions_matrix,
-                     reward_image_path='../data/test01/2-1.jpg')
+                         initial_states=myinitial_states, terminal_states=myterminal_states,
+                         rewards=myrewards_matrix, transitions=mytransitions_matrix,
+                         reward_image_path='../data/test01/reward.jpg')
 
     app = DawApp(model=daw_model)
     print app.start_expriment(3)

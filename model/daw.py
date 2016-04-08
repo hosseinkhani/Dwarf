@@ -8,10 +8,11 @@ class DawState(ReferenceState):
 
 
 class DawAction(ReferenceAction):
-    def __init__(self, name, key, **kwargs):
+    def __init__(self, name, key, index, **kwargs):
         ReferenceAction.__init__(self, **kwargs)
         self.name = name
         self.key = key
+        self.index = index
 
     def __repr__(self):
         return self.name
