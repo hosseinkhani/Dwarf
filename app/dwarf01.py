@@ -127,7 +127,6 @@ class DawApp(object):
         window.update()
         core.wait(1)
 
-
     @staticmethod
     def quit():
         core.quit()
@@ -182,7 +181,7 @@ if __name__ == '__main__':
     daw_model = DawModel(states=mystates, actions=myactions,
                          initial_states=myinitial_states, terminal_states=myterminal_states,
                          rewards=myrewards_matrix, transitions=mytransitions_matrix,
-                         reward_image_path='../data/test01/reward.jpg')
+                         reward_image_path='../data/test01/reward.png')
 
     app = DawApp(model=daw_model)
     print app.start_expriment(3)
