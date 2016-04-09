@@ -20,9 +20,10 @@ class DawAction(ReferenceAction):
 
 class DawModel(ReferenceModel):
     def __init__(self, transitions, rewards, actions, states, initial_states, terminal_states=None,
-                 reward_image_path=None):
+                 reward_image_path=None, lost_image_path=None):
         ReferenceModel.__init__(self, transitions, rewards, actions, states, initial_states, terminal_states)
         self.reward_path = reward_image_path
+        self.lost_path = lost_image_path
 
     def get_legal_actions(self, state):
         return {action.key: action for action in self.transitions[state].keys()}
