@@ -1,4 +1,5 @@
 import random
+from pickle import dump, load
 
 
 class ReferenceState(object):
@@ -95,6 +96,17 @@ class ReferenceModel(object):
         :return: list of actions
         """
         return self.actions
+
+    def save(self, file_name, description="No description."):
+        """
+        save model to a file for later usage
+        :param file_name: file to save
+        :param description: optional description to add
+        """
+        log_file = open('../model/'+file_name, 'w')
+        dump((description, self), log_file)
+        log_file.close()
+
 
 if __name__ == '__main__':
     myactions = [ReferenceAction(name='left'), ReferenceAction(name='right')]

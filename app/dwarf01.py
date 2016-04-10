@@ -1,5 +1,6 @@
 from psychopy import core, event, visual
 from model.daw import DawAction, DawState, DawModel
+
 import numpy as np
 
 
@@ -14,10 +15,12 @@ class DawApp(object):
         round_num = 1
         history = []
         window = visual.Window(kwargs.get('screen_size', [800, 600]),#[1366, 768]),
+                               color='Black',
                                monitor="testMonitor",
                                units="deg",
                                fullscr=False)
 
+        DawApp.show_message_page(window, "Press any key to start.", block=True, release_key=None)
         while round_num <= rounds:
             status, hist = self.start_new_round(window)
 
@@ -51,12 +54,12 @@ class DawApp(object):
 
         while True:
             try:
-                history.append(state.desc)
+                history.append(state)
 
                 if state not in self.model.terminal_states:
                     imgs = []
                     for i in xrange(len(state.images)):
-                        imgs.append(visual.ImageStim(win=window, image=state.images[i], pos=(-5+i*10, -2), size=5))
+                        imgs.append(visual.ImageStim(win=window, image=state.images[i], pos=(-5+i*10, 0), size=5))
                         imgs[i].draw()
                     if last_action_image is not None:
                         # last_action_image.pos = (0, 4)
@@ -84,28 +87,37 @@ class DawApp(object):
                     if last_action_image is None:
                         last_action_image = imgs[a.index]
                         imgs.remove(last_action_image)
-                        self.show_actions_transition(window, imgs, last_action_image, (-5+a.index*10, -2), (0, 4))
+                        self.show_actions_transition(window, imgs+[fixed_stim],
+                                                     last_action_image, (-5+a.index*10, 0), (0, 6))
 
                     session.next()
                     state, reward = session.send(a)
 
-                    history.append(a.name)
+                    history.append(a)
                     history.append(reward)
 
                     actions = {'q': -1}
                     actions.update(self.model.get_legal_actions(state))
                 else:
-                    self.show_reward_transition(window, imgs+[last_action_image],
+                    self.show_reward_transition(window, imgs+[last_action_image]+[fixed_stim],
                                                 self.model.reward_path if reward > 0 else self.model.lost_path)
                     session.next()
             except StopIteration:
                 return 1, history
 
     @staticmethod
-    def show_timeout_message(window):
-        visual.TextStim(win=window, text="U have 1 second to select an action!", pos=[0, 0], color='Black').draw()
+    def show_message_page(window, message, duration=2, block=False, release_key='space'):
+        visual.TextStim(win=window, text=message, pos=[0, 0], color='White').draw()
         window.update()
-        core.wait(2)
+
+        if block:
+            event.waitKeys(keyList=None if release_key is None else [release_key])
+        else:
+            core.wait(duration)
+
+    @staticmethod
+    def show_timeout_message(window):
+        DawApp.show_message_page(window, "U have 1 second to select an action!", duration=2)
 
     @staticmethod
     def show_actions_transition(window, stims, target_stim, start_point, end_point, cycles=40):
@@ -134,9 +146,17 @@ class DawApp(object):
         core.quit()
 
     @staticmethod
-    def _format_history(history):
-        # TODO
+    def format_history(history):
         return history
+
+    def save_logs(self, logs, description="No description."):
+        from datetime import datetime
+        from pickle import dump
+
+        now = datetime.now()
+        log_file = open('../log/log@'+now.strftime("%Y-%m-%d %H:%M"), 'w')
+        dump((description, self.model, logs), log_file)
+        log_file.close()
 
 
 if __name__ == '__main__':
@@ -191,9 +211,10 @@ if __name__ == '__main__':
                          reward_image_path='../data/test01/reward.png',
                          lost_image_path='../data/test01/lost.png')
 
-    app = DawApp(model=daw_model, fixed_point_path='../data/test01/Fixed.png')
+    app = DawApp(model=daw_model, fixed_point_path='../data/test01/fixed.png')
     history = app.start_expriment(3)
     for h in history:
         print h
+    app.save_logs(history, "this is a test for logging")
 
     app.quit()

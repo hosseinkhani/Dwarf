@@ -25,6 +25,9 @@ class DawModel(ReferenceModel):
         self.reward_path = reward_image_path
         self.lost_path = lost_image_path
 
+    # def __repr__(self):
+        # return self  # TODO better representation for docs maybe
+
     def get_legal_actions(self, state):
         return {action.key: action for action in self.transitions[state].keys()}
 
