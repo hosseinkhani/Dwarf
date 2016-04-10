@@ -10,7 +10,7 @@ class SimpleMiner(object):
     def _reformat_log_data(self):
         """
         example of converting raw logs to useful format for mining
-        raw format: [state 0, action 1, state 1, reward 1, action 2, state 2, reward 2, exit status]
+        raw format: [state 0, response time 1, action 1, state 1 , reward 1, response time 2, action 2, state 2, reward 2, exit status]
         new format: [action 1, action 2, state 1, reward, common transition or not, stay or not]
         """
         #
@@ -24,12 +24,12 @@ class SimpleMiner(object):
         while ind < len(self.log_data):
             if self.log_data[ind][-1] == 'normal':  # normal trial
                 this_trial = self.log_data[ind]
-                new_data.append([this_trial[1].index,
-                                 this_trial[4].index,
-                                 this_trial[2].desc,
-                                 this_trial[6],
-                                 self.log_model.is_transition_common(this_trial[0], this_trial[1], this_trial[2]),
-                                 True if this_trial[1] == last_trial[1] else False])
+                new_data.append([this_trial[2].index,
+                                 this_trial[6].index,
+                                 this_trial[3].desc,
+                                 this_trial[8],
+                                 self.log_model.is_transition_common(this_trial[0], this_trial[2], this_trial[3]),
+                                 this_trial[2] == last_trial[2]])
 
                 last_trial = this_trial
             else:  # uncompleted trials
@@ -41,15 +41,16 @@ class SimpleMiner(object):
 
 if __name__ == '__main__':
     """
-    0 im first one
-    1 im left one
-    2 im right one
+    0 im first state
+    1 im left state
+    2 im right state
     3 im reward state
     4 im nonreward state
-    0 left
-    1 right
+    #########################
+    0 left action
+    1 right action
     """
 
-    miner = SimpleMiner('log@2016-04-10 18:28')
+    miner = SimpleMiner('log@2016-04-10 18:54')
     print miner.log_description
     print miner.log_data

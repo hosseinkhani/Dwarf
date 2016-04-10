@@ -43,6 +43,7 @@ class DawApp(object):
         fixed_stim = visual.ImageStim(win=window, image=self.fixed_point_path, pos=(0, 0), size=1) \
             if self.fixed_point_path is not None else None
         history = []
+        clock = core.Clock()
 
         session = self.model.start_new_session()
         state = session.next()
@@ -67,9 +68,10 @@ class DawApp(object):
                         fixed_stim.draw()
                     window.update()
 
+                    clock.reset()
                     pressed_keys = event.waitKeys(2, actions)
+                    history.append(clock.getTime())
                     pressed_keys = [] if pressed_keys is None else pressed_keys
-
                     event.clearEvents()
 
                     a = None
