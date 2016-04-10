@@ -34,6 +34,12 @@ class DawModel(ReferenceModel):
     def get_all_actions(self):
         return {action.key: action for action in self.actions}
 
+    def is_transition_common(self, first_state, action, next_state):
+        return next_state == max(self.transitions[first_state][action].iteritems(), key=lambda x: x[1])[0]
+
+    def is_transition_rare(self, first_state, action, next_state):
+        return not self.is_transition_common(first_state, action, next_state)
+
 
 if __name__ == '__main__':
     s = DawState('dic/sl', 'dic/sl', desc="salam")

@@ -24,17 +24,16 @@ class DawApp(object):
         while round_num <= rounds:
             status, hist = self.start_new_round(window)
 
-            history.append(hist)
-
             if status == -1:  # quit
-                history.append('quit')
+                hist += ['quit']
                 break
             elif status == 0:  # timeout
+                hist += ['timeout']
                 self.show_timeout_message(window)
-                history.append('time out')
             elif status == 1:  # ok
-                pass
+                hist += ['normal']
 
+            history.append(hist)
             round_num += 1
 
         window.close()
@@ -47,6 +46,8 @@ class DawApp(object):
 
         session = self.model.start_new_session()
         state = session.next()
+        history.append(state)
+
         actions = {'q': -1}
         actions.update(self.model.get_legal_actions(state))
 
@@ -54,8 +55,6 @@ class DawApp(object):
 
         while True:
             try:
-                history.append(state)
-
                 if state not in self.model.terminal_states:
                     imgs = []
                     for i in xrange(len(state.images)):
@@ -94,6 +93,7 @@ class DawApp(object):
                     state, reward = session.send(a)
 
                     history.append(a)
+                    history.append(state)
                     history.append(reward)
 
                     actions = {'q': -1}
@@ -212,7 +212,7 @@ if __name__ == '__main__':
                          lost_image_path='../data/test01/lost.png')
 
     app = DawApp(model=daw_model, fixed_point_path='../data/test01/fixed.png')
-    history = app.start_expriment(3)
+    history = app.start_expriment(5)
     for h in history:
         print h
     app.save_logs(history, "this is a test for logging")

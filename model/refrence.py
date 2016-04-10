@@ -16,7 +16,7 @@ class ReferenceState(object):
         return self.id
 
     def __eq__(self, other):
-        return type(other) is ReferenceState and other.id == self.id
+        return issubclass(type(other), ReferenceState) and other.id == self.id
 
     def __hash__(self):
         return self.id
@@ -36,7 +36,7 @@ class ReferenceAction(object):
         return self.id
 
     def __eq__(self, other):
-        return type(other) is ReferenceState and other.id == self.id
+        return issubclass(type(other), ReferenceAction) and other.id == self.id
 
     def __hash__(self):
         return self.id.__hash__()
@@ -116,9 +116,9 @@ if __name__ == '__main__':
                 ReferenceState(desc='im reward state'),
                 ReferenceState(desc='im noreward state')]
 
-    myinitial_states = set([mystates[0]])
+    myinitial_states = {mystates[0]}
 
-    myterminal_states = set([mystates[3], mystates[4]])
+    myterminal_states = {mystates[3], mystates[4]}
 
     mytransitions_matrix = dict()
     mytransitions_matrix[mystates[0]] = {  # first state
