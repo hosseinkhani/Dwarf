@@ -108,61 +108,61 @@ class ReferenceModel(object):
         log_file.close()
 
 
-if __name__ == '__main__':
-    myactions = [ReferenceAction(name='left'), ReferenceAction(name='right')]
-    mystates = [ReferenceState(desc='im first one'),
-                ReferenceState(desc='im left one'),
-                ReferenceState(desc='im right one'),
-                ReferenceState(desc='im reward state'),
-                ReferenceState(desc='im noreward state')]
-
-    myinitial_states = {mystates[0]}
-
-    myterminal_states = {mystates[3], mystates[4]}
-
-    mytransitions_matrix = dict()
-    mytransitions_matrix[mystates[0]] = {  # first state
-        myactions[0]: {mystates[0]: 0, mystates[1]: .7, mystates[2]: .3, mystates[3]: 0, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: .3, mystates[2]: .7, mystates[3]: 0, mystates[4]: 0}  # right action
-    }
-    mytransitions_matrix[mystates[1]] = {  # left state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .6, mystates[4]: .4},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .1, mystates[4]: .9}  # right action
-    }
-    mytransitions_matrix[mystates[2]] = {  # right state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .2, mystates[4]: .8},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .4, mystates[4]: .6}  # right action
-    }
-    # these 2 have no use
-    mytransitions_matrix[mystates[3]] = {}  # reward state(terminal)
-    mytransitions_matrix[mystates[4]] = {}  # nonreward state(terminal)
-
-    myrewards_matrix = dict()
-    myrewards_matrix[mystates[0]] = {  # first state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
-    }
-    myrewards_matrix[mystates[1]] = {  # left state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
-    }
-    myrewards_matrix[mystates[2]] = {  # right state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
-    }
-    # these 2 have no use
-    myrewards_matrix[mystates[3]] = {}  # reward state(terminal)
-    myrewards_matrix[mystates[4]] = {}  # nonreward state(terminal)
-
-    model = ReferenceModel(states=mystates, actions=myactions,
-                           initial_states=myinitial_states, terminal_states=myterminal_states,
-                           rewards=myrewards_matrix, transitions=mytransitions_matrix)
-    pl = model.start_new_session()
-    s = pl.next()[0]
-    print s.desc
-    pl.next()
-    res = pl.send(myactions[0])
-    print res[0].desc, res[1]
-    pl.next()
-    res = pl.send(myactions[0])
-    print res[0].desc, res[1]
+# if __name__ == '__main__':
+#     myactions = [ReferenceAction(name='left'), ReferenceAction(name='right')]
+#     mystates = [ReferenceState(desc='im first one'),
+#                 ReferenceState(desc='im left one'),
+#                 ReferenceState(desc='im right one'),
+#                 ReferenceState(desc='im reward state'),
+#                 ReferenceState(desc='im noreward state')]
+#
+#     myinitial_states = {mystates[0]}
+#
+#     myterminal_states = {mystates[3], mystates[4]}
+#
+#     mytransitions_matrix = dict()
+#     mytransitions_matrix[mystates[0]] = {  # first state
+#         myactions[0]: {mystates[0]: 0, mystates[1]: .7, mystates[2]: .3, mystates[3]: 0, mystates[4]: 0},  # left action
+#         myactions[1]: {mystates[0]: 0, mystates[1]: .3, mystates[2]: .7, mystates[3]: 0, mystates[4]: 0}  # right action
+#     }
+#     mytransitions_matrix[mystates[1]] = {  # left state
+#         myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .6, mystates[4]: .4},  # left action
+#         myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .1, mystates[4]: .9}  # right action
+#     }
+#     mytransitions_matrix[mystates[2]] = {  # right state
+#         myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .2, mystates[4]: .8},  # left action
+#         myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .4, mystates[4]: .6}  # right action
+#     }
+#     # these 2 have no use
+#     mytransitions_matrix[mystates[3]] = {}  # reward state(terminal)
+#     mytransitions_matrix[mystates[4]] = {}  # nonreward state(terminal)
+#
+#     myrewards_matrix = dict()
+#     myrewards_matrix[mystates[0]] = {  # first state
+#         myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
+#         myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
+#     }
+#     myrewards_matrix[mystates[1]] = {  # left state
+#         myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
+#         myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
+#     }
+#     myrewards_matrix[mystates[2]] = {  # right state
+#         myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
+#         myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
+#     }
+#     # these 2 have no use
+#     myrewards_matrix[mystates[3]] = {}  # reward state(terminal)
+#     myrewards_matrix[mystates[4]] = {}  # nonreward state(terminal)
+#
+#     model = ReferenceModel(states=mystates, actions=myactions,
+#                            initial_states=myinitial_states, terminal_states=myterminal_states,
+#                            rewards=myrewards_matrix, transitions=mytransitions_matrix)
+#     pl = model.start_new_session()
+#     s = pl.next()[0]
+#     print s.desc
+#     pl.next()
+#     res = pl.send(myactions[0])
+#     print res[0].desc, res[1]
+#     pl.next()
+#     res = pl.send(myactions[0])
+#     print res[0].desc, res[1]

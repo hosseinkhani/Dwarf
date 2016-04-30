@@ -1,5 +1,5 @@
 from psychopy import core, event, visual
-from model.daw import DawAction, DawState, DawModel
+from model.daw2 import DawAction, DawState, DawModel2
 from dwarf01 import DawApp
 
 
@@ -25,7 +25,7 @@ class DawApp2(DawApp):
                                color='Black',
                                monitor="testMonitor",
                                units="deg",
-                               fullscr=True)
+                               fullscr=kwargs.get('full_screen', True))
 
         self.fixed_stim = visual.ImageStim(win=window, image=self.fixed_point_path, pos=(0, 0), size=1) \
             if self.fixed_point_path is not None else None
@@ -113,14 +113,21 @@ if __name__ == '__main__':
     myrewards_matrix[mystates[3]] = {}  # reward state(terminal)
     myrewards_matrix[mystates[4]] = {}  # nonreward state(terminal)
 
-    daw_model = DawModel(states=mystates, actions=myactions,
-                         initial_states=myinitial_states, terminal_states=myterminal_states,
-                         rewards=myrewards_matrix, transitions=mytransitions_matrix,
-                         reward_image_path='../data/test01/reward.png',
-                         lost_image_path='../data/test01/lost.png')
+    query_round = 5
 
-    app = DawApp2(model=daw_model, query_round=2, fixed_point_path='../data/test01/fixed.png')
-    myhistory = app.start_expriment(5)
+    daw_model = DawModel2(states=mystates, actions=myactions,
+                          initial_states=myinitial_states, terminal_states=myterminal_states,
+                          rewards=myrewards_matrix, transitions=mytransitions_matrix,
+                          reward_image_path='../data/test01/reward.png',
+                          lost_image_path='../data/test01/lost.png',
+                          update_round=5)
+
+    app = DawApp2(model=daw_model, query_round=5, fixed_point_path='../data/test01/fixed.png')
+
+    app.start_expriment(3*query_round, screen_size=[800, 600], full_screen=False)  # warm up
+
+    daw_model.rewards_history = []
+    myhistory = app.start_expriment(1*query_round)
     print myhistory
     app.save_logs(myhistory, "dawapp2 log sample")
 

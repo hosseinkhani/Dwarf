@@ -1,10 +1,16 @@
 from refrence import ReferenceState, ReferenceAction, ReferenceModel
+import random
 
 
 class DawState(ReferenceState):
     def __init__(self, *images_path, **kwargs):
         ReferenceState.__init__(self, **kwargs)
         self.images = images_path
+
+    def __repr__(self):
+        if hasattr(self, 'desc'):
+            return self.desc
+        return ReferenceState.__repr__(self)
 
 
 class DawAction(ReferenceAction):
@@ -39,9 +45,3 @@ class DawModel(ReferenceModel):
 
     def is_transition_rare(self, first_state, action, next_state):
         return not self.is_transition_common(first_state, action, next_state)
-
-
-if __name__ == '__main__':
-    s = DawState('dic/sl', 'dic/sl', desc="salam")
-    a = DawAction('salam')
-    print a
