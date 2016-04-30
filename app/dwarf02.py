@@ -27,11 +27,11 @@ class DawApp2(DawApp):
                                units="deg",
                                fullscr=kwargs.get('full_screen', True))
 
-        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=1, pos=(0, 0))
+        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=.5, pos=(0, 0))
 
         self.show_message_page(window, "Press any key to start.", block=True, release_key=None)
         while round_num <= rounds:
-            status, hist = self.start_new_round(window)
+            status, hist = self.start_new_round(window, **kwargs)
 
             if round_num % self.query_round == 0:
                 hist2 = self.show_best_image_page(window, reward_images)
@@ -56,11 +56,11 @@ class DawApp2(DawApp):
         visual.TextStim(win=window, text="which one is better?", pos=(0, 4), color='White').draw()
         for i in xrange(len(imgs_path)):
             visual.ImageStim(win=window, image=imgs_path[i], pos=(-12+i*8, 0), size=5).draw()
-            visual.TextStim(win=window, text=str(i), pos=(-12+i*8, -3), color='White').draw()
+            visual.TextStim(win=window, text=str(i+1), pos=(-12+i*8, -3), color='White').draw()
         window.update()
 
         self.clock.reset()
-        keys = event.waitKeys(keyList=[str(i) for i in range(len(imgs_path))])
+        keys = event.waitKeys(keyList=[str(i+1) for i in range(len(imgs_path))])
         history['response_time'] = self.clock.getTime()
         history['answer'] = keys[0]
 
@@ -68,7 +68,7 @@ class DawApp2(DawApp):
 
 
 if __name__ == '__main__':
-    myactions = [DawAction(name='left', key='left', index=0), DawAction(name='right', key='right', index=1)]
+    myactions = [DawAction(name='left', key='lshift', index=0), DawAction(name='right', key='rshift', index=1)]
     mystates = [DawState('../data/test01/0-1.jpg', '../data/test01/0-2.jpg', desc='im first one'),
                 DawState('../data/test01/1-1.jpg', '../data/test01/1-2.jpg', desc='im left one'),
                 DawState('../data/test01/2-1.jpg', '../data/test01/2-2.jpg', desc='im right one'),
@@ -127,8 +127,8 @@ if __name__ == '__main__':
     app.start_expriment(3*query_round, screen_size=[800, 600], full_screen=False)  # warm up
 
     daw_model.rewards_history = []
-    myhistory = app.start_expriment(1*query_round)
-    print myhistory
-    app.save_logs(myhistory, "dawapp2 log sample")
+    # myhistory = app.start_expriment(1*query_round)
+    # print myhistory
+    # app.save_logs(myhistory, "dawapp2 log sample")
 
     app.quit()

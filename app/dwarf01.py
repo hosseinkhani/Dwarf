@@ -16,12 +16,12 @@ class DawApp(object):
     def start_expriment(self, rounds, **kwargs):
         round_num = 1
         history = []
-        window = visual.Window(kwargs.get('screen_size', [800, 600]),  # [1366, 768]),
+        window = visual.Window(kwargs.get('screen_size', [1366, 768]),
                                color='Black',
                                monitor="testMonitor",
                                units="deg",
-                               fullscr=False)
-        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=1, pos=(0, 0))
+                               fullscr=kwargs.get('full_screen', True))
+        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=.5, pos=(0, 0))
 
         self.show_message_page(window, "Press any key to start.", block=True)
         while round_num <= rounds:
@@ -40,7 +40,7 @@ class DawApp(object):
         window.close()
         return history
 
-    def start_new_round(self, window):
+    def start_new_round(self, window, **kwargs):
         # log format: [state 0, response time 1, action 1, state 1 , reward 1,
         #              response time 2, action 2, state 2, reward 2, exit status]
         history = {'type': 'trial', 'states': [], 'actions': [], 'response_times': [], 'rewards': []}
@@ -68,7 +68,7 @@ class DawApp(object):
                     window.update()
 
                     self.clock.reset()
-                    pressed_keys = event.waitKeys(2, actions)
+                    pressed_keys = event.waitKeys(kwargs.get('action_timeout', 1), actions)
                     history['response_times'].append(self.clock.getTime())
                     pressed_keys = [] if pressed_keys is None else pressed_keys
                     event.clearEvents()
@@ -101,8 +101,11 @@ class DawApp(object):
                     actions = {'q': -1}
                     actions.update(self.model.get_legal_actions(state))
                 else:
-                    self.show_reward_transition(window, imgs+[last_action_image],
-                                                self.model.reward_path if reward > 0 else self.model.lost_path)
+                    self.show_reward_transition(window, [],
+                                                self.model.reward_path if reward > 0 else self.model.lost_path,
+                                                imgs[a.index], (-5+a.index*10, 0), (0, 6), cycles=40, duration=1)
+                    # self.show_reward_transition(window, imgs+[last_action_image],
+                    #                             self.model.reward_path if reward > 0 else self.model.lost_path)
                     session.next()
             except StopIteration:
                 history['exit_status'] = 'normal'
@@ -137,13 +140,28 @@ class DawApp(object):
 
             counter += 1
 
-    def show_reward_transition(self, window, stims, image_path):
+    def show_reward_transition(self, window, stims, image_path, target_stim,
+                               start_point, end_point, cycles=40, duration=1):
+        counter = 0
+        delta = tuple(np.subtract(end_point, start_point) / float(cycles))
+
+        while counter < cycles:
+            self.draw_fixed_stim()
+            for stim in stims:
+                stim.draw()
+            target_stim.pos += delta
+            target_stim.draw()
+            window.update()
+
+            counter += 1
+
         self.draw_fixed_stim()
+        target_stim.draw()
         for stim in stims:
             stim.draw()
         visual.ImageStim(win=window, image=image_path, pos=(0, -5), size=3).draw()
         window.update()
-        core.wait(1)
+        core.wait(duration)
 
     @staticmethod
     def quit():
