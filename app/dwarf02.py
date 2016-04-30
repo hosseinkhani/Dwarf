@@ -36,6 +36,8 @@ class DawApp2(DawApp):
             if round_num % self.query_round == 0:
                 hist2 = self.show_best_image_page(window, reward_images)
                 history.append(hist2)
+                hist2 = self.show_confidence_page(window, kwargs.get('discretization', 5))
+                history.append(hist2)
 
             if status == -1:  # quit
                 break
@@ -61,6 +63,21 @@ class DawApp2(DawApp):
 
         self.clock.reset()
         keys = event.waitKeys(keyList=[str(i+1) for i in range(len(imgs_path))])
+        history['response_time'] = self.clock.getTime()
+        history['answer'] = keys[0]
+
+        return history
+
+    def show_confidence_page(self, window, discretization=5):
+        history = {'type': 'confidence'}
+
+        visual.TextStim(win=window, text="choose one due to your confidence?", pos=(0, 4), color='White').draw()
+        for i in xrange(discretization):
+            visual.TextStim(win=window, text=str(i+1), pos=(-10+i*(float(20)/(discretization-1)), -3), color='White').draw()
+        window.update()
+
+        self.clock.reset()
+        keys = event.waitKeys(keyList=[str(i+1) for i in range(discretization)])
         history['response_time'] = self.clock.getTime()
         history['answer'] = keys[0]
 
@@ -124,11 +141,11 @@ if __name__ == '__main__':
 
     app = DawApp2(model=daw_model, query_round=query_round)
 
-    app.start_expriment(3*query_round, screen_size=[800, 600], full_screen=False)  # warm up
+    # app.start_expriment(3*query_round, screen_size=[800, 600], full_screen=False)  # warm up
 
     daw_model.rewards_history = []
-    # myhistory = app.start_expriment(1*query_round)
-    # print myhistory
+    myhistory = app.start_expriment(3*query_round)
+    print myhistory
     # app.save_logs(myhistory, "dawapp2 log sample")
 
     app.quit()
