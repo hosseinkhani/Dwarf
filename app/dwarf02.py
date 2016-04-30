@@ -7,8 +7,8 @@ class DawApp2(DawApp):
     """
     DawApp task + best image choice
     """
-    def __init__(self, model, query_round=2, fixed_point_path=None):
-        DawApp.__init__(self, model, fixed_point_path)
+    def __init__(self, model, query_round=10):
+        DawApp.__init__(self, model)
         self.query_round = query_round
 
     def start_expriment(self, rounds, **kwargs):
@@ -27,8 +27,8 @@ class DawApp2(DawApp):
                                units="deg",
                                fullscr=kwargs.get('full_screen', True))
 
-        self.fixed_stim = visual.ImageStim(win=window, image=self.fixed_point_path, pos=(0, 0), size=1) \
-            if self.fixed_point_path is not None else None
+        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=1, pos=(0, 0))
+
         self.show_message_page(window, "Press any key to start.", block=True, release_key=None)
         while round_num <= rounds:
             status, hist = self.start_new_round(window)
@@ -120,9 +120,9 @@ if __name__ == '__main__':
                           rewards=myrewards_matrix, transitions=mytransitions_matrix,
                           reward_image_path='../data/test01/reward.png',
                           lost_image_path='../data/test01/lost.png',
-                          update_round=5)
+                          update_round=query_round)
 
-    app = DawApp2(model=daw_model, query_round=5, fixed_point_path='../data/test01/fixed.png')
+    app = DawApp2(model=daw_model, query_round=query_round)
 
     app.start_expriment(3*query_round, screen_size=[800, 600], full_screen=False)  # warm up
 

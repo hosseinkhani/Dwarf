@@ -8,9 +8,8 @@ class DawApp(object):
     """
     simplest task
     """
-    def __init__(self, model, fixed_point_path=None):
+    def __init__(self, model):
         self.model = model
-        self.fixed_point_path = fixed_point_path
         self.fixed_stim = None
         self.clock = core.Clock()
 
@@ -22,8 +21,7 @@ class DawApp(object):
                                monitor="testMonitor",
                                units="deg",
                                fullscr=False)
-        self.fixed_stim = visual.ImageStim(win=window, image=self.fixed_point_path, pos=(0, 0), size=1) \
-            if self.fixed_point_path is not None else None
+        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=1, pos=(0, 0))
 
         self.show_message_page(window, "Press any key to start.", block=True)
         while round_num <= rounds:
@@ -111,7 +109,6 @@ class DawApp(object):
                 return 1, history
 
     def draw_fixed_stim(self):
-        if self.fixed_stim is not None:
             self.fixed_stim.draw()
 
     def show_message_page(self, window, message, duration=2, block=False, release_key=None):
@@ -214,7 +211,7 @@ if __name__ == '__main__':
                          reward_image_path='../data/test01/reward.png',
                          lost_image_path='../data/test01/lost.png')
 
-    app = DawApp(model=daw_model, fixed_point_path='../data/test01/fixed.png')
+    app = DawApp(model=daw_model)
     myhistory = app.start_expriment(5)
     print myhistory
     app.save_logs(myhistory, "this is a test for logging in simple task")
