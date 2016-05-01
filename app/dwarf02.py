@@ -130,7 +130,7 @@ if __name__ == '__main__':
     myrewards_matrix[mystates[3]] = {}  # reward state(terminal)
     myrewards_matrix[mystates[4]] = {}  # nonreward state(terminal)
 
-    query_round = 5
+    query_round = 15
 
     daw_model = DawModel2(states=mystates, actions=myactions,
                           initial_states=myinitial_states, terminal_states=myterminal_states,
@@ -142,10 +142,11 @@ if __name__ == '__main__':
     app = DawApp2(model=daw_model, query_round=query_round)
 
     # app.start_expriment(3*query_round, screen_size=[800, 600], full_screen=False)  # warm up
+    app.start_expriment(2*query_round, discretization=6)  # warm up
 
     daw_model.rewards_history = []
-    myhistory = app.start_expriment(3*query_round)
+    myhistory = app.start_expriment(14*query_round, discretization=6)
     print myhistory
-    # app.save_logs(myhistory, "dawapp2 log sample")
+    app.save_logs(myhistory, "derakhshian log sample")
 
     app.quit()

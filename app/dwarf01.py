@@ -126,7 +126,7 @@ class DawApp(object):
     def show_timeout_message(self, window):
         self.show_message_page(window, "U have 1 second to select an action!", duration=2)
 
-    def show_actions_transition(self, window, stims, target_stim, start_point, end_point, cycles=40):
+    def show_actions_transition(self, window, stims, target_stim, start_point, end_point, cycles=30):
         counter = 0
         delta = tuple(np.subtract(end_point, start_point) / float(cycles))
 
@@ -141,7 +141,7 @@ class DawApp(object):
             counter += 1
 
     def show_reward_transition(self, window, stims, image_path, target_stim,
-                               start_point, end_point, cycles=40, duration=1):
+                               start_point, end_point, cycles=30, duration=1):
         counter = 0
         delta = tuple(np.subtract(end_point, start_point) / float(cycles))
 

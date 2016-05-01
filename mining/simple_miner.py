@@ -23,6 +23,7 @@ if __name__ == '__main__':
     1 right action
     """
 
-    miner = SimpleMiner('log@2016-04-11 01:07')
+    miner = SimpleMiner('log@2016-05-01 10:15')
     print miner.log_description
     print miner.log_data
+    print miner.log_model.rewards_history
