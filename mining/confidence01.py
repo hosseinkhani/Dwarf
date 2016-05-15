@@ -135,4 +135,4 @@ if __name__ == '__main__':
     # plt.show()
 
     # exit: all windows by pressing enter
-    raw_input("exit?")
+    raw_input("press enter to exit all windows?")
