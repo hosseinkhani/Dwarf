@@ -31,11 +31,11 @@ class SimpleMiner(object):
         w : white.
         """
         if label == '0':
-            return 'breen'
+            return 'b'
         if label == '1':
-            return 'glue'
+            return 'g'
         if label == '2':
-            return 'red'
+            return 'r'
         if label == '3':
             return 'c'
 
@@ -60,7 +60,7 @@ class SimpleMiner(object):
 
     def draw_results(self, qs, best, confidence, real_mu):
         fig = plt.figure()
-        fig.suptitle(str(real_mu.index(.7)))
+        fig.suptitle("best action index is {real_best}".format(real_best=real_mu.index(max(real_mu))))
         ax = fig.add_subplot(111)
 
         # self.draw_gaussian(ax, best, 1.0/(10*confidence))
@@ -73,9 +73,9 @@ class SimpleMiner(object):
             mu = sum(qs[i]) / float(len(qs[i]))
             sigma = sum([((d-real_mu[i])**2)/((len(qs[i]))**.5) for d in qs[i]])
 
-            print mu, sigma
+            # print mu, sigma
 
-            plots.append(self.draw_gaussian(ax, mu, sigma))
+            plots.append(self.draw_gaussian(ax, mu, sigma, str(i)))
         self.write_selected(ax, best, confidence)
         self.draw_legend(ax, plots)
 
@@ -83,7 +83,7 @@ class SimpleMiner(object):
 
         self.fig_num += 1
 
-    def show_q_confidence(self):
+    def show_qvalues_confidence(self):
         c = 0
         best = -1
         qs = [[] for i in range(4)]
@@ -97,7 +97,7 @@ class SimpleMiner(object):
                 qs[which].append(hist['rewards'][1])
             elif hist['type'] == 'confidence':
                 print 'confidence', hist['answer']
-                print qs
+                print 'qvalues', qs
 
                 miner.draw_results(qs, best, int(hist['answer']), miner.log_model.rewards_history[c])
 
@@ -106,8 +106,9 @@ class SimpleMiner(object):
                 best = -1
                 qs = [[] for i in range(4)]
             elif hist['type'] == 'best image':
-                print 'best', hist['answer']
+                print '#'*10, 'figure:', c+1
                 best = int(hist['answer'])-1
+                print 'best', best
 
 
 if __name__ == '__main__':
@@ -127,6 +128,11 @@ if __name__ == '__main__':
     print miner.log_description
     # print miner.log_data
     # print len(miner.log_model.rewards_history)
-    miner.show_q_confidence()
+    miner.show_qvalues_confidence()
 
+    # exit: exit button for each window
+    # plt.ioff()
+    # plt.show()
+
+    # exit: all windows by pressing enter
     raw_input("exit?")
