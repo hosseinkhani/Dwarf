@@ -27,17 +27,12 @@ class DawApp2(DawApp):
                                units="deg",
                                fullscr=kwargs.get('full_screen', True))
 
-        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=.5, pos=(0, 0))
+        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=.3, pos=(0, 0))
 
         self.show_message_page(window, "Press any key to start.", block=True, release_key=None)
         while round_num <= rounds:
+            print round_num, self.model.update_counter
             status, hist = self.start_new_round(window, **kwargs)
-
-            if round_num % self.query_round == 0:
-                hist2 = self.show_best_image_page(window, reward_images)
-                history.append(hist2)
-                hist2 = self.show_confidence_page(window, kwargs.get('discretization', 5))
-                history.append(hist2)
 
             if status == -1:  # quit
                 break
@@ -45,8 +40,15 @@ class DawApp2(DawApp):
                 self.show_timeout_message(window)
             elif status == 1:  # ok
                 pass
-
             history.append(hist)
+
+            if round_num % self.query_round == 0:
+                print 'conf ---------------'
+                hist2 = self.show_best_image_page(window, reward_images)
+                history.append(hist2)
+                hist2 = self.show_confidence_page(window, kwargs.get('discretization', 5))
+                history.append(hist2)
+
             round_num += 1
 
         window.close()
@@ -126,27 +128,28 @@ if __name__ == '__main__':
         myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
         myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
     }
-    # these 2 have no use
+    # these 2 have no usage
     myrewards_matrix[mystates[3]] = {}  # reward state(terminal)
     myrewards_matrix[mystates[4]] = {}  # nonreward state(terminal)
 
-    query_round = 15
+    query_round = 10
 
     daw_model = DawModel2(states=mystates, actions=myactions,
                           initial_states=myinitial_states, terminal_states=myterminal_states,
                           rewards=myrewards_matrix, transitions=mytransitions_matrix,
                           reward_image_path='../data/test01/reward.png',
                           lost_image_path='../data/test01/lost.png',
-                          update_round=query_round)
+                          update_round=query_round,
+                          initial_rewards=(.3, .3, .3, .7))
 
     app = DawApp2(model=daw_model, query_round=query_round)
 
     # app.start_expriment(3*query_round, screen_size=[800, 600], full_screen=False)  # warm up
-    app.start_expriment(2*query_round, discretization=6)  # warm up
+    # app.start_expriment(2*query_round, discretization=6)  # warm up
 
-    daw_model.rewards_history = []
-    myhistory = app.start_expriment(14*query_round, discretization=6)
+    # daw_model.rewards_history = []
+    myhistory = app.start_expriment(3*query_round, discretization=6)
     print myhistory
-    app.save_logs(myhistory, "derakhshian log sample")
+    app.save_logs(myhistory, "my log sample")
 
     app.quit()

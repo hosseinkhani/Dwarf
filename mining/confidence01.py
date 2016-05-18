@@ -52,8 +52,31 @@ class SimpleMiner(object):
         else:
             return ax.plot(x, mlab.normpdf(x, mu, sigma), c=self.label_to_color(label), label=label)[0]
 
+    def draw_bar(self, ax, mu, sigma, ind, label=None, width=.3):
+        sigma = math.sqrt(sigma)
+
+        if label is None:
+            return ax.bar(ind, mu, width, yerr=sigma)
+        else:
+            return ax.bar(ind, mu, width, yerr=sigma,
+                          color=self.label_to_color(label), label=label, ecolor='k')
+
+
+        # add some text for labels, title and axes ticks
+        # ax.set_ylabel('Scores')
+        # ax.set_title('Scores by group and gender')
+        # ax.set_xticks(ind + width)
+        # ax.set_xticklabels(('G1', 'G2', 'G3', 'G4', 'G5'))
+
+        # for rect in rects1:
+        # height = rect.get_height()
+        # ax.text(rect.get_x() + rect.get_width()/2., 1.05*height,
+        #         '%d' % int(height),
+        #         ha='center', va='bottom')
+
     def draw_legend(self, ax, plots, loc=3):
-        ax.legend(handles=plots, loc=loc)
+        l = ax.legend(handles=plots, loc=loc)
+        l.draggable(state=True)
 
     def write_selected(self, ax, num, confidence):
         ax.set_title('{num} selected with confidence {confidence}'.format(num=num, confidence=confidence))
@@ -62,6 +85,7 @@ class SimpleMiner(object):
         fig = plt.figure()
         fig.suptitle("best action index is {real_best}".format(real_best=real_mu.index(max(real_mu))))
         ax = fig.add_subplot(111)
+        ax.grid(True)
 
         # self.draw_gaussian(ax, best, 1.0/(10*confidence))
         plots = []
@@ -75,7 +99,8 @@ class SimpleMiner(object):
 
             # print mu, sigma
 
-            plots.append(self.draw_gaussian(ax, mu, sigma, str(i)))
+            # plots.append(self.draw_gaussian(ax, mu, sigma, str(i)))
+            plots.append(self.draw_bar(ax, mu, sigma, i, str(i)))
         self.write_selected(ax, best, confidence)
         self.draw_legend(ax, plots)
 
@@ -123,16 +148,16 @@ if __name__ == '__main__':
     1 right action
     """
 
-    miner = SimpleMiner('log@2016-05-01 10:15')
+    miner = SimpleMiner('log@2016-05-18 04:27')
     # miner.draw_gaussian(3, 1, 'test')
     print miner.log_description
     # print miner.log_data
-    # print len(miner.log_model.rewards_history)
+    print len(miner.log_model.rewards_history), miner.log_model.rewards_history
     miner.show_qvalues_confidence()
 
     # exit: exit button for each window
-    # plt.ioff()
-    # plt.show()
+    plt.ioff()
+    plt.show()
 
     # exit: all windows by pressing enter
-    raw_input("press enter to exit all windows?")
+    # raw_input("press enter to exit all windows?")

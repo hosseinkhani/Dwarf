@@ -65,7 +65,7 @@ class ReferenceModel(object):
         """
         for playing one round in the environment
         :param initial_state: first state to be there, if None a random one selected
-        :return: a generator that gets action in each turn and return state, reward
+        :return: a generator that gets action in each turn and returns (state, reward)
         """
         current_state = initial_state if initial_state is not None else random.sample(self.initial_states, 1)[0]
 
@@ -74,8 +74,10 @@ class ReferenceModel(object):
         while current_state not in self.terminal_states:
             action = yield
 
-            rand = random.uniform(0, 0.9999)
+            rand = random.random()
+            # print '#'*20, current_state, action
             for s, p in self.transitions[current_state][action].iteritems():
+                # print s, p, rand
                 if rand-p <= 0:
                     break
                 rand -= p

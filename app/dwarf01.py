@@ -21,7 +21,7 @@ class DawApp(object):
                                monitor="testMonitor",
                                units="deg",
                                fullscr=kwargs.get('full_screen', True))
-        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=.5, pos=(0, 0))
+        self.fixed_stim = visual.Circle(win=window, fillColor='White', radius=.3, pos=(0, 0))
 
         self.show_message_page(window, "Press any key to start.", block=True)
         while round_num <= rounds:
@@ -232,6 +232,6 @@ if __name__ == '__main__':
     app = DawApp(model=daw_model)
     myhistory = app.start_expriment(5)
     print myhistory
-    app.save_logs(myhistory, "this is a test for logging in simple task")
+    # app.save_logs(myhistory, "this is a test for logging in simple task")
 
     app.quit()
