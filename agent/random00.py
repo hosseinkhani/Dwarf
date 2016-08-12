@@ -141,4 +141,4 @@ if __name__ == '__main__':
     ag = ReferenceAgent(model=daw_model, query_round=query_round)
     myhistory = ag.start(100)
     # print myhistory
-    ag.save_logs(myhistory, "test agent")
+    ag.save_logs(myhistory, "random agent")

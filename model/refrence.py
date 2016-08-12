@@ -90,7 +90,16 @@ class ReferenceModel(object):
         :param state: state to get legal actions
         :return: list of actions
         """
-        return self.transitions[state].keys()
+        if type(self.transitions) == dict:
+            return self.transitions[state].keys()
+        elif type(self.transitions) == list:
+            ans = []
+            for action in self.actions:
+                if sum(self.transitions[state][action]):
+                    ans.append(action)
+            return ans
+        else:
+            raise ValueError("transition must be a 3d list or dict")
 
     def get_all_actions(self):
         """

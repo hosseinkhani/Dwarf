@@ -150,6 +150,6 @@ if __name__ == '__main__':
     # daw_model.rewards_history = []
     myhistory = app.start_expriment(3*query_round, discretization=6)
     print myhistory
-    app.save_logs(myhistory, "my log sample")
+    # app.save_logs(myhistory, "my log sample")
 
     app.quit()

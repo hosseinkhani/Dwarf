@@ -94,10 +94,10 @@ class SimpleMiner(object):
                 continue
 
             mu = sum(qs[i]) / float(len(qs[i]))
-            sigma = sum([((d-real_mu[i])**2)/((len(qs[i]))**.5) for d in qs[i]])
+            sigma = sum([((d-real_mu[i])**2)/(len(qs[i])**2) for d in qs[i]])
             # sigma = sum([((d-mu)**2)/((len(qs[i]))**.5) for d in qs[i]])
 
-            # print 'mu: ', mu, 'sigma: ', sigma
+            print 'mu: ', mu, 'sigma: ', sigma
 
             # plots.append(self.draw_gaussian(ax, mu, sigma, str(i)))
             plots.append(self.draw_bar(ax, mu, sigma, i, str(i)))
@@ -148,8 +148,8 @@ if __name__ == '__main__':
     1 right action
     """
 
-    miner = SimpleMiner('agent-log@2016-05-18 05:22')
-    # miner.draw_gaussian(3, 1, 'test')
+    # miner = SimpleMiner('agent-log@2016-06-01 16:43')
+    miner = SimpleMiner('agent-log@2016-06-01 16:52')
     print miner.log_description
     # print miner.log_data
     print len(miner.log_model.rewards_history), miner.log_model.rewards_history
