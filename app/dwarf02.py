@@ -1,6 +1,8 @@
 from psychopy import core, event, visual
-from model.daw2 import DawAction, DawState, DawModel2
+from model.daw import DawAction, DawState, DawModel
 from dwarf01 import DawApp
+
+import numpy as np
 
 
 class DawApp2(DawApp):
@@ -31,7 +33,6 @@ class DawApp2(DawApp):
 
         self.show_message_page(window, "Press any key to start.", block=True, release_key=None)
         while round_num <= rounds:
-            print round_num, self.model.update_counter
             status, hist = self.start_new_round(window, **kwargs)
 
             if status == -1:  # quit
@@ -88,59 +89,54 @@ class DawApp2(DawApp):
 
 if __name__ == '__main__':
     myactions = [DawAction(name='left', key='lshift', index=0), DawAction(name='right', key='rshift', index=1)]
-    mystates = [DawState('../data/test01/0-1.jpg', '../data/test01/0-2.jpg', desc='im first one'),
-                DawState('../data/test01/1-1.jpg', '../data/test01/1-2.jpg', desc='im left one'),
-                DawState('../data/test01/2-1.jpg', '../data/test01/2-2.jpg', desc='im right one'),
-                DawState(desc='im reward state'),
-                DawState(desc='im nonreward state')]
+    mystates = [DawState('../data/test01/0-1.jpg', '../data/test01/0-2.jpg', desc='im first one', index=-1),
+                DawState('../data/test01/1-1.jpg', '../data/test01/1-2.jpg', desc='im left one', index=0),
+                DawState('../data/test01/2-1.jpg', '../data/test01/2-2.jpg', desc='im right one', index=2),
+                DawState(desc='im final state', index=-1)]
 
     myinitial_states = {mystates[0]}
 
-    myterminal_states = {mystates[3], mystates[4]}
+    myterminal_states = {mystates[3]}
 
     mytransitions_matrix = dict()
     mytransitions_matrix[mystates[0]] = {  # first state
-        myactions[0]: {mystates[0]: 0, mystates[1]: .7, mystates[2]: .3, mystates[3]: 0, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: .3, mystates[2]: .7, mystates[3]: 0, mystates[4]: 0}  # right action
+        myactions[0]: {mystates[1]: .7, mystates[2]: .3},  # left action
+        myactions[1]: {mystates[1]: .3, mystates[2]: .7}  # right action
     }
     mytransitions_matrix[mystates[1]] = {  # left state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .6, mystates[4]: .4},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .1, mystates[4]: .9}  # right action
+        myactions[0]: {mystates[3]: 1.},  # left action
+        myactions[1]: {mystates[3]: 1.}  # right action
     }
     mytransitions_matrix[mystates[2]] = {  # right state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .2, mystates[4]: .8},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .4, mystates[4]: .6}  # right action
+        myactions[0]: {mystates[3]: 1.},  # left action
+        myactions[1]: {mystates[3]: 1.}  # right action
     }
-    # these 2 have no use
+    # this has no use
     mytransitions_matrix[mystates[3]] = {}  # reward state(terminal)
-    mytransitions_matrix[mystates[4]] = {}  # nonreward state(terminal)
 
-    myrewards_matrix = dict()
-    myrewards_matrix[mystates[0]] = {  # first state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
-    }
-    myrewards_matrix[mystates[1]] = {  # left state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
-    }
-    myrewards_matrix[mystates[2]] = {  # right state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
-    }
-    # these 2 have no usage
-    myrewards_matrix[mystates[3]] = {}  # reward state(terminal)
-    myrewards_matrix[mystates[4]] = {}  # nonreward state(terminal)
+    probs = np.random.uniform(size=4)
 
-    query_round = 10
+    def myrewards_function(**kwargs):
+        if kwargs['current_state'].index == -1:
+            return 0.
 
-    daw_model = DawModel2(states=mystates, actions=myactions,
-                          initial_states=myinitial_states, terminal_states=myterminal_states,
-                          rewards=myrewards_matrix, transitions=mytransitions_matrix,
-                          reward_image_path='../data/test01/reward.png',
-                          lost_image_path='../data/test01/lost.png',
-                          update_round=query_round,
-                          initial_rewards=(.3, .3, .3, .7))
+        reward = 1. if probs[kwargs['current_state'].index+kwargs['action'].index] > np.random.uniform() else 0.
+
+        for i in range(4):
+            p = .025 * np.random.randn()
+            while probs[i]+p > .8 or probs[i]+p < .2:
+                p = .025 * np.random.randn()
+            probs[i] += p
+
+        return reward
+
+    query_round = 3
+
+    daw_model = DawModel(states=mystates, actions=myactions,
+                         initial_states=myinitial_states, terminal_states=myterminal_states,
+                         rewards=myrewards_function, transitions=mytransitions_matrix,
+                         reward_image_path='../data/test01/reward.png',
+                         lost_image_path='../data/test01/lost.png')
 
     app = DawApp2(model=daw_model, query_round=query_round)
 

@@ -81,7 +81,9 @@ class ReferenceModel(object):
                 if rand-p <= 0:
                     break
                 rand -= p
-            yield s, self.rewards[current_state][action][s]
+            reward = self.rewards(current_state=current_state, action=action, next_state=s) if callable(self.rewards) \
+                else self.rewards[current_state][action][s]
+            yield s, reward
             current_state = s
 
     def get_legal_actions(self, state):

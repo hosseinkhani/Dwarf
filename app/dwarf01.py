@@ -191,16 +191,16 @@ if __name__ == '__main__':
 
     mytransitions_matrix = dict()
     mytransitions_matrix[mystates[0]] = {  # first state
-        myactions[0]: {mystates[0]: 0, mystates[1]: .7, mystates[2]: .3, mystates[3]: 0, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: .3, mystates[2]: .7, mystates[3]: 0, mystates[4]: 0}  # right action
+        myactions[0]: {mystates[1]: .7, mystates[2]: .3},  # left action
+        myactions[1]: {mystates[1]: .3, mystates[2]: .7}  # right action
     }
     mytransitions_matrix[mystates[1]] = {  # left state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .6, mystates[4]: .4},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .1, mystates[4]: .9}  # right action
+        myactions[0]: {mystates[3]: .6, mystates[4]: .4},  # left action
+        myactions[1]: {mystates[3]: .1, mystates[4]: .9}  # right action
     }
     mytransitions_matrix[mystates[2]] = {  # right state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .2, mystates[4]: .8},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: .4, mystates[4]: .6}  # right action
+        myactions[0]: {mystates[3]: .2, mystates[4]: .8},  # left action
+        myactions[1]: {mystates[3]: .4, mystates[4]: .6}  # right action
     }
     # these 2 have no use
     mytransitions_matrix[mystates[3]] = {}  # reward state(terminal)
@@ -208,16 +208,16 @@ if __name__ == '__main__':
 
     myrewards_matrix = dict()
     myrewards_matrix[mystates[0]] = {  # first state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
+        myactions[0]: {mystates[1]: 0, mystates[2]: 0},  # left action
+        myactions[1]: {mystates[1]: 0, mystates[2]: 0}  # right action
     }
     myrewards_matrix[mystates[1]] = {  # left state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
+        myactions[0]: {mystates[3]: 1, mystates[4]: 0},  # left action
+        myactions[1]: {mystates[3]: 1, mystates[4]: 0}  # right action
     }
     myrewards_matrix[mystates[2]] = {  # right state
-        myactions[0]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0},  # left action
-        myactions[1]: {mystates[0]: 0, mystates[1]: 0, mystates[2]: 0, mystates[3]: 1, mystates[4]: 0}  # right action
+        myactions[0]: {mystates[3]: 1, mystates[4]: 0},  # left action
+        myactions[1]: {mystates[3]: 1, mystates[4]: 0}  # right action
     }
     # these 2 have no use
     myrewards_matrix[mystates[3]] = {}  # reward state(terminal)
@@ -230,7 +230,7 @@ if __name__ == '__main__':
                          lost_image_path='../data/test01/lost.png')
 
     app = DawApp(model=daw_model)
-    myhistory = app.start_expriment(5)
+    myhistory = app.start_expriment(10)
     print myhistory
     # app.save_logs(myhistory, "this is a test for logging in simple task")
 
